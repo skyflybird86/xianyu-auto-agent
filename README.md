@@ -4,23 +4,46 @@
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 基于大语言模型的智能闲鱼客服机器人，实现 7×24 小时自动化值守，支持多专家协同决策、智能议价和上下文感知对话。
+可视化参数、状态管理、日志记录等功能，方便用户监控和管理服务运行。
+提供便捷的chrome插件，一键获取闲鱼cookie，无需手动配置。
 
 ## 界面预览
 
 ### Web 管理端
 
 <div align="center">
-  <img src="./images/admin_panel.png" width="800" alt="管理端">
+  <img src="./images/admin_panel00.png" width="800" alt="管理端">
+  <img src="./images/admin_panel01.png" width="800" alt="管理端">
   <br>
   <em>图1: Web 管理端 - 配置管理、状态监控、日志查看</em>
 </div>
 
+
 ### Chrome 插件
 
 <div align="center">
-  <img src="./images/chrome_plugin.png" width="400" alt="Chrome插件">
+  <img src="./images/ch.png" width="400" alt="Chrome插件">
   <br>
   <em>图2: Chrome 插件 - Cookie 一键获取</em>
+</div>
+<div align="center">
+  <img src="./images/ch0.png" width="400" alt="Chrome插件">
+  <br>
+  <em>图2: Chrome 插件 - Cookie 一键获取</em>
+</div>
+<div align="center">
+  <img src="./images/ch1.png" width="400" alt="Chrome插件">
+  <br>
+  <em>图2: Chrome 插件 - Cookie 一键获取</em>
+</div>
+
+##  🎨效果图
+<div align="center">
+  <img src="./images/demo01.png" width="400" alt="闲鱼自动回复效果">
+  <img src="./images/demo02.png" width="400" alt="闲鱼自动回复效果">
+  <img src="./images/demo03.png" width="400" alt="闲鱼自动回复效果">
+  <br>
+  <em>效果图</em>
 </div>
 
 ##  核心特性
