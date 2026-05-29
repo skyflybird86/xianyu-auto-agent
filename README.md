@@ -1,158 +1,188 @@
-# 🚀 Xianyu AutoAgent - 智能闲鱼客服机器人系统
+# 🚀 Xianyu AutoAgent - 智能闲鱼客服机器人
 
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/) [![LLM Powered](https://img.shields.io/badge/LLM-powered-FF6F61)](https://platform.openai.com/)
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-专为闲鱼平台打造的AI值守解决方案，实现闲鱼平台7×24小时自动化值守，支持多专家协同决策、智能议价和上下文感知对话。 
+基于大语言模型的智能闲鱼客服机器人，实现 7×24 小时自动化值守，支持多专家协同决策、智能议价和上下文感知对话。
 
+## 界面预览
 
-## 🌟 核心特性
-
-### 智能对话引擎
-| 功能模块   | 技术实现            | 关键特性                                                     |
-| ---------- | ------------------- | ------------------------------------------------------------ |
-| 上下文感知 | 会话历史存储        | 轻量级对话记忆管理，完整对话历史作为LLM上下文输入            |
-| 专家路由   | LLM prompt+规则路由 | 基于提示工程的意图识别 → 专家Agent动态分发，支持议价/技术/客服多场景切换 |
-
-### 业务功能矩阵
-| 模块     | 已实现                        | 规划中                       |
-| -------- | ----------------------------- | ---------------------------- |
-| 核心引擎 | ✅ LLM自动回复<br>✅ 上下文管理 | 🔄 情感分析增强               |
-| 议价系统 | ✅ 阶梯降价策略                | 🔄 市场比价功能               |
-| 技术支持 | ✅ 网络搜索整合                | 🔄 RAG知识库增强              |
-| 运维监控 | ✅ 基础日志                    | 🔄 钉钉集成<br>🔄  Web管理界面 |
-
-## 🎨效果图
-<div align="center">
-  <img src="./images/demo1.png" width="600" alt="客服">
-  <br>
-  <em>图1: 客服随叫随到</em>
-</div>
-
+### Web 管理端
 
 <div align="center">
-  <img src="./images/demo2.png" width="600" alt="议价专家">
+  <img src="./images/admin_panel.png" width="800" alt="管理端">
   <br>
-  <em>图2: 阶梯式议价</em>
+  <em>图1: Web 管理端 - 配置管理、状态监控、日志查看</em>
 </div>
+
+### Chrome 插件
 
 <div align="center">
-  <img src="./images/demo3.png" width="600" alt="技术专家"> 
+  <img src="./images/chrome_plugin.png" width="400" alt="Chrome插件">
   <br>
-  <em>图3: 技术专家上场</em>
+  <em>图2: Chrome 插件 - Cookie 一键获取</em>
 </div>
 
-<div align="center">
-  <img src="./images/log.png" width="600" alt="后台log"> 
-  <br>
-  <em>图4: 后台log</em>
-</div>
+##  核心特性
 
+### 多专家协同系统
 
-## 🚴 快速开始
-小白请直接查看[保姆级教学文档](https://my.feishu.cn/wiki/JtkBwkI9GiokZikVdyNceEfZncE)
+| 专家角色 | 职责场景 | 核心能力 |
+|---------|---------|---------|
+| 分类专家 | 意图识别 | LLM + 规则双轨路由，精准分发咨询类型 |
+| 议价专家 | 价格谈判 | 阶梯降价策略，根据议价次数动态调整优惠 |
+| 技术专家 | 参数咨询 | 产品规格、型号对比、使用指导等技术支持 |
+| 默认专家 | 通用回复 | 物流、售后、使用体验等日常问题解答 |
+
+### 智能路由引擎
+
+采用三级路由策略，保证响应准确性：
+
+1. **关键词预检** - 技术类词汇优先匹配
+2. **正则模式匹配** - 价格、对比等模式精准识别
+3. **LLM 兜底分类** - 复杂语境由大模型判断
+
+### 上下文管理
+
+- SQLite 持久化存储对话历史
+- 按用户 ID + 商品 ID 隔离会话
+- 支持议价次数追踪
+
+### 安全过滤
+
+- 自动屏蔽微信、QQ、支付宝等敏感词
+- 线下交易风险提示
+- 消息安全过滤模块
+
+## 技术架构
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    WebSocket 客户端                   │
+│                  (接收买家消息)                       │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│              XianyuReplyBot 核心引擎                  │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐ │
+│  │分类专家  │  │议价专家  │  │技术专家  │  │默认专家  │ │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘ │
+│       └────────────┴────────────┴────────────┘      │
+│                         │                            │
+│              ┌──────────▼──────────┐                │
+│              │    IntentRouter    │                │
+│              │      意图路由       │                │
+│              └──────────┬──────────┘                │
+└─────────────────────────┼────────────────────────────┘
+                          │
+         ┌────────────────┼────────────────┐
+         │                │                │
+         ▼                ▼                ▼
+   ┌──────────┐    ┌──────────┐    ┌──────────┐
+   │上下文管理 │    │  LLM API │    │安全过滤  │
+   │  SQLite  │    │(通义千问等)│    │          │
+   └──────────┘    └──────────┘    └──────────┘
+```
+
+### 技术栈
+
+- **运行时**: Python 3.8+
+- **AI 能力**: OpenAI SDK（兼容通义千问、DeepSeek 等主流 API）
+- **实时通信**: WebSocket
+- **数据存储**: SQLite
+- **Web 服务**: Flask
+- **部署**: Docker / Docker Compose
+
+##  快速开始
+
 ### 环境要求
+
 - Python 3.8+
 
 ### 安装步骤
-```bash
-1. 克隆仓库
-git clone https://github.com/shaxiu/XianyuAutoAgent.git
-cd XianyuAutoAgent
 
-2. 安装依赖
+```bash
+# 克隆仓库
+git clone https://github.com/skyflybird86/xianyu-auto-agent.git
+cd xianyu-auto-agent
+
+# 安装依赖
 pip install -r requirements.txt
 
-3. 配置环境变量
-创建一个 `.env` 文件，包含以下内容，也可直接重命名 `.env.example` ：
-#必配配置
-API_KEY=apikey通过模型平台获取
-COOKIES_STR=填写网页端获取的cookie
-MODEL_BASE_URL=模型地址
-MODEL_NAME=模型名称
-#可选配置
-TOGGLE_KEYWORDS=接管模式切换关键词，默认为句号（输入句号切换为人工接管，再次输入则切换AI接管）
-SIMULATE_HUMAN_TYPING=True/False #模拟人工回复延迟
-
-注意：默认使用的模型是通义千问，如需使用其他API，请自行修改.env文件中的模型地址和模型名称；
-COOKIES_STR自行在闲鱼网页端获取cookies(网页端F12打开控制台，选择Network，点击Fetch/XHR,点击一个请求，查看cookies)
-
-4. 创建提示词文件prompts/*_prompt.txt（也可以直接将模板名称中的_example去掉），否则默认读取四个提示词模板中的内容
+# 复制环境变量模板
+cp .env.example .env
 ```
 
-### 使用方法
+### 配置说明
 
-运行主程序：
+编辑 `.env` 文件，填入以下配置：
+
+```env
+# 必填配置
+API_KEY=你的API密钥
+MODEL_BASE_URL=模型API地址
+MODEL_NAME=模型名称
+COOKIES_STR=闲鱼网页Cookie
+XIANYU_URL=闲鱼消息WebSocket地址
+XIANYU_WS_URL=闲鱼WebSocket地址
+
+# 可选配置
+TOGGLE_KEYWORDS=接管模式切换关键词（默认句号）
+SIMULATE_HUMAN_TYPING=True/False
+```
+
+### 运行
+
 ```bash
 python main.py
 ```
 
-### 自定义提示词
+### 提示词自定义
 
-可以通过编辑 `prompts` 目录下的文件来自定义各个专家的提示词：
+编辑 `prompts/` 目录下的文件可自定义各专家的行为：
 
-- `classify_prompt.txt`: 意图分类提示词
-- `price_prompt.txt`: 价格专家提示词
-- `tech_prompt.txt`: 技术专家提示词
-- `default_prompt.txt`: 默认回复提示词
+- `classify_prompt.txt` - 分类专家提示词
+- `price_prompt.txt` - 议价专家提示词
+- `tech_prompt.txt` - 技术专家提示词
+- `default_prompt.txt` - 默认回复提示词
 
-## 🤝 参与贡献
+## Docker 部署
 
-欢迎通过 Issue 提交建议或 PR 贡献代码，请遵循 [贡献指南](https://contributing.md/)
+```bash
+# 构建镜像
+docker build -t xianyu-auto-agent .
 
-## 🧸特别鸣谢
-本项目参考了以下开源项目：
-https://github.com/cv-cat/XianYuApis
+# 启动容器
+docker-compose up -d
+```
 
-感谢<a href="https://github.com/cv-cat">@CVcat</a>的技术支持
+## 项目结构
 
-## 🛡 注意事项
+```
+XianyuAutoAgent-main/
+├── main.py                 # 程序入口
+├── XianyuAgent.py          # 核心Agent引擎
+├── XianyuApis.py           # 闲鱼API封装
+├── context_manager.py      # 上下文管理器
+├── web_server.py           # Web服务
+├── prompts/                # 提示词配置
+│   ├── classify_prompt.txt
+│   ├── price_prompt.txt
+│   ├── tech_prompt.txt
+│   └── default_prompt.txt
+├── utils/                   # 工具函数
+├── chrome-extension/        # Chrome扩展（可选）
+├── Dockerfile
+├── docker-compose.yml
+└── requirements.txt
+```
 
-⚠️ 注意：**本项目仅供学习与交流，如有侵权联系作者删除。**
+##  注意事项
 
-鉴于项目的特殊性，开发团队可能在任何时间**停止更新**或**删除项目**。
+⚠️ 本项目仅供学习与交流使用，请勿用于商业违规场景。
 
-如需学习交流，请联系：[coderxiu@qq.com](https://mailto:coderxiu@qq.com/)
+如有问题或建议，请联系：coderxiu@qq.com
 
-## 📱 交流群
-欢迎加入项目交流群，交流技术、分享经验、互助学习。
-<div align="center">
-  <table>
-    <tr>
-      <td align="center"><strong>交流群25（已满200）</strong></td>
-      <td align="center"><strong>交流群26（推荐加入）</strong></td>
-    </tr>
-    <tr>
-      <td><img src="./images/wx_group25-1.png" width="300px" alt="交流群25"></td>
-      <td><img src="./images/wx_group26.png" width="300px" alt="交流群26"></td>
-    </tr>
-  </table>
-</div>
+##  License
 
-## 💼 寻找机会
-
-### <a href="https://github.com/shaxiu">@Shaxiu</a>
-**🔍寻求方向**：**AI产品经理**  
-**📫 联系：** **email**:coderxiu@qq.com；**wx:** coderxiu
-
-### <a href="https://github.com/cv-cat">@CVcat</a>
-**🔍寻求方向**：**研发工程师**（python、java、逆向、爬虫）  
-**📫 联系：** **email:** 992822653@qq.com；**wx:** CVZC15751076989
-## ☕ 请喝咖啡
-您的☕和⭐将助力项目持续更新：
-
-<div align="center">
-  <img src="./images/wechat_pay.jpg" width="400px" alt="微信赞赏码"> 
-  <img src="./images/alipay.jpg" width="400px" alt="支付宝收款码">
-</div>
-
-
-## 📈 Star 趋势
-<a href="https://www.star-history.com/#shaxiu/XianyuAutoAgent&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=shaxiu/XianyuAutoAgent&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=shaxiu/XianyuAutoAgent&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=shaxiu/XianyuAutoAgent&type=Date" />
- </picture>
-</a>
-
-
+MIT License
